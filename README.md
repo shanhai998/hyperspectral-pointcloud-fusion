@@ -14,7 +14,6 @@ The workflow includes scene inventory, pose parsing, solar-geometry calculation,
 | `config/project_config.yaml` | Main configuration file. Replace every path placeholder before running. |
 | `config/crs_candidates.json` | Candidate projected coordinate reference systems. |
 | `hyperspectral_pointcloud_fusion/` | Core configuration, ENVI, geometry, visibility, and PLY package. |
-| `hpf3/` | Leakage-safe reconstruction and leave-one-view-out utilities. |
 | `scripts/` | Numbered processing stages and optional quality-control utilities. |
 | `run/run_all.bat` | Runs the complete workflow on Windows. |
 | `run/run_from_10.bat` | Resumes from visibility selection after calibration and projection have been completed. |
