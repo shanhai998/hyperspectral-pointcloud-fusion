@@ -44,8 +44,6 @@ Edit `config/project_config.yaml` before the first run. At minimum, replace thes
 | `<PATH_TO_BREF_ANGLE_TABLE>` | Spreadsheet containing target or auxiliary angle information. |
 | `<PATH_TO_POINTCLOUD_PLY>` | Input point-cloud file in PLY format. |
 
-Do not commit local input paths, raw imagery, point clouds, calibration caches, or generated outputs to a public repository.
-
 ## Input data
 
 The workflow expects:
