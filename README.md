@@ -15,8 +15,6 @@ The workflow includes scene inventory, pose parsing, solar-geometry calculation,
 | `config/crs_candidates.json` | Candidate projected coordinate reference systems. |
 | `hyperspectral_pointcloud_fusion/` | Core configuration, ENVI, geometry, visibility, and PLY package. |
 | `scripts/` | Numbered processing stages and optional quality-control utilities. |
-| `run/run_all.bat` | Runs the complete workflow on Windows. |
-| `run/run_from_10.bat` | Resumes from visibility selection after calibration and projection have been completed. |
 | `requirements.txt` | Pinned Python dependencies used by this repository. |
 
 ## Software requirements
