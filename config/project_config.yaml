@@ -1,0 +1,302 @@
+project:
+  name: hyperspectral_pointcloud_fusion
+  python_exe: "<PATH_TO_PYTHON_EXECUTABLE>"
+  project_root_windows: "<PATH_TO_PROJECT_ROOT>"
+  output_base: "<PATH_TO_OUTPUT_BASE>"
+paths:
+  ref_root: "<PATH_TO_REF_DIRECTORY>"
+  brdf_excel: "<PATH_TO_BRDF_ANGLE_TABLE>"
+  bref_excel: "<PATH_TO_BREF_ANGLE_TABLE>"
+  pointcloud_ply: "<PATH_TO_POINTCLOUD_PLY>"
+outputs:
+  config_dir: _work\config
+  inventory_dir: _work\inventory
+  metadata_dir: _work\metadata
+  solar_geometry_dir: _work\solar_geometry
+  scene_quality_dir: _work\scene_quality
+  crs_dir: _work\crs
+  scene_db_dir: source\scene_database
+  pointcloud_dir: source\pointcloud
+  target_calibration_dir: calibration
+  candidate_dir: projection\candidates
+  selection_dir: projection\corrected
+  fusion_dir: fusion
+  directional_brf_dir: brf
+  product_dir: .
+  log_dir: logs
+solar_geometry:
+  enabled: true
+  gps_time_column: GPS时间
+  timezone: Asia/Shanghai
+  assume_naive_time_is_local: true
+  prefer_time_source: brdf
+  azimuth_reference: north_cw
+  output_sun_vector: target_to_sun
+  min_solar_elevation_deg: 5.0
+scene_quality_control:
+  enabled: true
+  expected_raw_scene_count: 49
+  expected_used_scene_count: 49
+  exclude_scene_ids: []
+  exclusion_reason: {}
+  require_brdf_pose: true
+  require_hdr_data: true
+  require_solar_geometry: true
+  min_projected_inside_count: 1000
+  min_candidate_kept_count: 1000
+  min_clear_observation_count: 1000
+  max_registration_rmse_px: 20.0
+  max_correction_angle_deg: 10.0
+  fail_on_scene_count_mismatch: false
+directional_brf:
+  enabled: true
+  include_all_retained_views: true
+  output_format: parquet
+  max_csv_rows: 100000
+  write_full_spectra_npy: true
+  bands_for_table:
+  - 26
+  - 51
+  - 76
+  - 110
+  - 164
+  - 165
+  include_all_selected_bands: true
+  chunk_rows: 200000
+  workers: 8
+  enable_memmap_cache: true
+  use_persistent_executor: true
+  parquet_include_spectra: false
+  csv_preview_include_spectra: false
+  write_observation_index_csv: false
+  build_point_summary: false
+  build_angular_bin_statistics: false
+  write_directional_curve_plots: false
+  write_quality_summary: false
+  write_interpretation_files: false
+  allow_slow_csv_row_count: false
+  paper_fields_only: true
+  add_quality_level: true
+  rename_index_bands: true
+  quality_level:
+    high_offaxis_max_deg: 20.0
+    high_empty_cone_min_deg: 15.0
+    high_border_min_px: 80.0
+    high_view_zenith_max_deg: 60.0
+    medium_offaxis_max_deg: 35.0
+    medium_empty_cone_min_deg: 8.0
+    medium_border_min_px: 30.0
+    medium_view_zenith_max_deg: 70.0
+  point_quality:
+    high_min_clear_views: 5
+    high_min_view_zenith_range_deg: 20.0
+    high_max_primary_weight_ratio: 0.85
+    medium_min_clear_views: 3
+  angular_statistics:
+    bin_deg: 5.0
+    angle_columns:
+    - view_zenith_deg
+    - relative_azimuth_deg
+    - local_solar_incidence_deg
+    variables:
+    - band_31
+    - band_51
+    - band_73
+    - band_100
+    - NDVI
+    - RVI
+    - MSAVI
+    - NDWI
+    min_count_for_plot: 10
+    plot_variables:
+    - NDVI
+    ci_level: 0.95
+camera_model:
+  image_width: 1886
+  image_height: 1886
+  fov_h_deg: 35.0
+  fov_v_deg: 35.0
+  azimuth_reference: north_cw
+  zenith_reference: from_nadir
+  observation_is_target_to_sensor: false
+  camera_forward_is_opposite_observation: false
+  camera_forward_axis: z
+  image_v_axis: down
+  flip_u: false
+  flip_v: false
+  roll_deg: -90.0
+  preview_rgb_band_numbers:
+  - 73
+  - 51
+  - 31
+center_estimation:
+  ground_z_quantile: 0.05
+  anchor_method: first_hit_pointcloud
+  first_hit_ray_radius_m: 1.0
+  first_hit_min_points: 100
+  first_hit_min_distance_m: 1.0
+  first_hit_max_distance_m: 300.0
+  first_hit_depth_quantile: 0.05
+  first_hit_cluster_depth_m: 1.0
+  first_hit_fallback: ray_ground_intersection
+  use_anchor_to_update_forward: false
+  center_z_source: anchor_median
+  prefer_bref_target_xy: false
+  manual_ground_z_m: null
+  manual_center_xyz: null
+bands:
+  mode: subset
+  subset_indices:
+  - 26
+  - 51
+  - 76
+  - 110
+  - 164
+  - 165
+  subset_wavelengths_nm: []
+crs:
+  source_geographic_crs: EPSG:4326
+  force_candidate_name: epsg4526_x_strip38M
+  candidate_file: config/crs_candidates.json
+  manual_vertical_offset_m: 0.0
+  default_vertical_note: manual vertical offset only; auto geoid estimation removed in v8-new.
+processing:
+  quiet_logs: true
+  scene_workers: 20
+  task_workers: 20
+  io_workers: 20
+  projection_chunk_size: 100000
+  candidate_scene_limit_per_point: 49
+  candidate_storage_mode: memmap
+  write_candidate_npz: false
+  candidate_sort_chunk_size: 200000
+  candidate_init_chunk_size: 200000
+  candidate_scan_chunk_size: 200000
+  max_range_m: 300.0
+  center_window_policy: prefer
+  center_window_width_px: 1024
+  center_window_height_px: 1024
+  coarse_border_weight: 0.01
+  coarse_offaxis_weight: 0.4
+  coarse_range_weight: 0.005
+  coarse_surface_alignment_weight: 4.0
+  coarse_vertical_view_zenith_weight: 0.12
+  selection_workers: 4
+  selection_backend: processes
+  selection_chunk_size: 7500
+  selection_log_every_points: 300000
+  selection_rebuild_candidate_cache: false
+  selection_scene_limit_per_point: 49
+  max_visible_views_per_point: 49
+  max_fallback_views_per_point: 49
+  keep_fallback_when_no_clear: true
+  fallback_weight_penalty: 0.05
+  keep_unclear_views_with_clear: true
+  selection_use_worker_shards: true
+  selection_shard_merge_chunk_rows: 500000
+  kd_leafsize: 32
+  selection_kdtree_balanced_tree: false
+  selection_kdtree_compact_nodes: false
+  normal_estimation_k_neighbors: 48
+  normal_estimation_chunk_size: 20000
+  normal_estimation_workers: 20
+  local_visibility_radius_m: 1.2
+  local_blocker_clearance_m: 0.08
+  local_blocker_min_along_m: 0.08
+  local_empty_cone_clear_min_deg: 4.0
+  local_min_neighbor_count: 2
+  local_max_neighbors: 256
+  image_zbuffer_occlusion_enabled: true
+  image_zbuffer_radius_px: 2
+  image_zbuffer_depth_tolerance_m: 0.80
+  image_zbuffer_rebuild: false
+  selection_score_weights:
+    coarse_score_weight: 0.2
+    empty_cone_weight: 0.7
+    blocker_count_weight: 0.45
+    offaxis_weight: 0.2
+    range_weight: 0.006
+    surface_alignment_weight: 1.0
+    vertical_view_zenith_weight: 0.3
+    normal_confidence_floor: 0.25
+  fusion_weight_params:
+    coarse_score_scale: 6.0
+    offaxis_scale_deg: 28.0
+    range_scale_m: 80.0
+    border_scale_px: 120.0
+    cone_scale_deg: 25.0
+    blocker_penalty: 0.5
+    clear_boost: 1.0
+    unclear_penalty: 0.25
+    surface_alignment_floor: 0.05
+    surface_alignment_power: 1.0
+    vertical_view_boost: 2.5
+    vertical_view_power: 1.0
+    normal_confidence_floor: 0.25
+    min_weight: 1.0e-06
+  normalize_weights_per_point: true
+  fusion_workers: 8
+  fusion_csv_chunk_rows: 100000
+  write_fused_observation_table: false
+  write_fused_point_summary: false
+  index_band_numbers_stored_plus_one:
+  - 165
+  - 167
+  - 168
+  fusion_enable_memmap_cache: true
+  fusion_use_persistent_executor: true
+  fusion_weight_mode: surface_adaptive
+  fusion_softmax_temperature: 30.0
+  fusion_raw_weight_power: 1.0
+  surface_adaptive_fusion_params:
+    score_temperature: 45.0
+    range_scale_m: 240.0
+    offaxis_scale_deg: 120.0
+    cone_scale_deg: 30.0
+    cone_floor: 0.75
+    blocker_penalty: 0.35
+    unclear_penalty: 0.2
+    normal_confidence_floor: 0.25
+    surface_alignment_floor: 0.05
+    surface_alignment_power: 1.0
+    vertical_view_strength: 4.0
+    vertical_view_power: 1.0
+    view_zenith_scale_deg: 60.0
+target_calibration:
+  target_selection:
+    mode: center_radius
+    bbox:
+    - 605245.5
+    - 2959429.5
+    - 605247.2
+    - 2959431.5
+    center_xy:
+    - 605246.37
+    - 2959430.72
+    radius_m: 1.0
+    z_min: 105.0
+    z_max: 144.0
+  top_xyz: null
+  base_xyz: null
+  annotation_csv: calibration\target_annotations.csv
+  correction_log_csv: calibration\per_scene_correction.csv
+  max_angle_deg: 180.0
+  quality_gate:
+    enabled: true
+    r_corr_total_angle_deg:
+      min: 5.0
+      median: 5.0
+      mean: 10.0
+products:
+  fused_spectra_name: fused_point_spectra.npy
+  rename_index_bands: true
+  rgb_preferred_bands_one_based: [73, 51, 31]
+  rgb_fallback_bands_one_based: [76, 51, 26]
+  minimal_extra_fields: true
+  extra_fields_to_keep:
+  - contributing_view_count
+  - effective_view_count
+  - primary_weight_ratio
+  - clear_view_ratio
+  - weighted_mean_view_zenith_deg
+  - weighted_mean_surface_view_cos
