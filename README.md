@@ -111,3 +111,7 @@ Large previews, duplicate summaries, temporary memmaps, and products that can be
 | 12 | `12_build_point_directional_brf_observations.py` | Build the all-view directional BRF geometry table. |
 | 12b | `12b_build_gauss_support_products.py` | Rebuild all-view and weighted products with 8-pixel Gaussian support. |
 | 13 | `13_export_products.py` | Export the final fused point cloud and manifests. |
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](https://github.com/shanhai998/hyperspectral-pointcloud-fusion/blob/main/LICENSE) for details.
