@@ -30,14 +30,6 @@ Install the pinned dependencies with:
 python -m pip install -r requirements.txt
 ```
 
-The batch launchers search for Python in the following order:
-
-1. the executable specified by the `HPCF_PYTHON` environment variable;
-2. `<PROJECT_ROOT>\.venv\Scripts\python.exe`;
-3. `<PROJECT_ROOT>\venv\Scripts\python.exe`;
-4. `py.exe`; and
-5. `python.exe` available on `PATH`.
-
 ## Configuration
 
 Edit `config/project_config.yaml` before the first run. At minimum, replace these placeholders:
